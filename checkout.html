@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout – Envara Ventures</title>
+  <link href="https://fonts.cdnfonts.com/css/geist" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header>
+    <div class="wrapper navbar">
+      <a class="logo" href="index.html">
+        <div class="logo-mark">EV</div>
+        Envara Ventures
+      </a>
+      <nav class="nav-links">
+        <a href="shop.html">Shop</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <a href="cart.html" class="button secondary">Cart <span class="cart-count">0</span></a>
+        <a href="admin.html" class="button">Admin</a>
+      </div>
+    </div>
+  </header>
+  <main class="wrapper">
+    <section class="page-hero">
+      <h1>Checkout</h1>
+      <p class="section-subtitle">Fast, simple, frictionless.</p>
+    </section>
+    <section class="layout-two">
+      <form class="card" data-checkout-form>
+        <h3>Contact</h3>
+        <div class="form-grid">
+          <div>
+            <label for="name">Full name</label>
+            <input required type="text" name="name" id="name" placeholder="Alex Smith">
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input required type="email" name="email" id="email" placeholder="you@example.com">
+          </div>
+          <div>
+            <label for="phone">Phone</label>
+            <input type="tel" name="phone" id="phone" placeholder="+1 555 123 4567">
+          </div>
+        </div>
+        <h3>Shipping</h3>
+        <div class="form-grid">
+          <div>
+            <label for="address">Address</label>
+            <input required type="text" name="address" id="address" placeholder="123 Minimal Ave">
+          </div>
+          <div>
+            <label for="city">City</label>
+            <input required type="text" name="city" id="city" placeholder="Copenhagen">
+          </div>
+          <div>
+            <label for="country">Country</label>
+            <input required type="text" name="country" id="country" placeholder="Denmark">
+          </div>
+        </div>
+        <label for="notes">Notes</label>
+        <textarea name="notes" id="notes" placeholder="Delivery preferences or instructions"></textarea>
+        <button class="button" type="submit" style="margin-top:16px;">Place order</button>
+      </form>
+      <div class="cart-summary">
+        <h3>Order summary</h3>
+        <p class="badge-muted">Subtotal</p>
+        <h2 data-checkout-total>$0.00</h2>
+        <p class="badge-muted">Taxes and shipping calculated after confirmation.</p>
+      </div>
+    </section>
+  </main>
+  <footer class="footer">
+    <div class="wrapper footer-content">
+      <div>Envara Ventures</div>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms & Conditions</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
