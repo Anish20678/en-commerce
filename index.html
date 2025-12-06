@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Envara Ventures – Modern Ecommerce</title>
+  <link href="https://fonts.cdnfonts.com/css/geist" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header>
+    <div class="wrapper navbar">
+      <a class="logo" href="index.html">
+        <div class="logo-mark">EV</div>
+        Envara Ventures
+      </a>
+      <nav class="nav-links">
+        <a href="shop.html">Shop</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <a href="cart.html" class="button secondary">Cart <span class="cart-count">0</span></a>
+        <a href="admin.html" class="button">Admin</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrapper">
+    <section class="hero">
+      <div>
+        <div class="badge">Premium workspace essentials</div>
+        <h1 data-hero-title>Design-forward essentials for thoughtful workspaces.</h1>
+        <p data-hero-subtitle>Envara Ventures curates precision-built products with minimal aesthetics, adaptive functionality, and sustainable materials.</p>
+        <div class="nav-actions">
+          <a href="shop.html" class="button">Explore the shop</a>
+          <a href="about.html" class="button secondary">Learn about Envara</a>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Why Envara?</h3>
+        <p>Minimal design language, crafted materials, and frictionless fulfillment for teams and creators.</p>
+        <ul>
+          <li>Curated catalog with premium finishes</li>
+          <li>Responsive support and seamless logistics</li>
+          <li>Admin controls to manage catalog and orders</li>
+        </ul>
+      </div>
+    </section>
+
+    <section>
+      <div class="flex-between">
+        <div>
+          <p class="badge">Featured</p>
+          <h2 class="section-title">Featured products</h2>
+          <p class="section-subtitle">A focused selection aligned to Envara's modern aesthetic.</p>
+        </div>
+        <a href="shop.html" class="button secondary">View all</a>
+      </div>
+      <div class="card-grid" data-featured-grid></div>
+    </section>
+
+    <section class="intro">
+      <div class="layout-two">
+        <div>
+          <h3>Modern, sleek, premium.</h3>
+          <p>Every Envara Ventures product is designed to integrate with clean, contemporary spaces while prioritizing longevity and ergonomics.</p>
+        </div>
+        <div>
+          <p class="badge-muted">Collections</p>
+          <div class="card-grid" style="margin:10px 0;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">
+            <div class="card"><h4>Workspace</h4><p>Desks, seating, lighting built for daily performance.</p></div>
+            <div class="card"><h4>Objects</h4><p>Minimal accessories that keep surfaces refined.</p></div>
+            <div class="card"><h4>Travel</h4><p>Carry pieces that balance utility with silhouette.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Testimonials</h2>
+      <p class="section-subtitle">Teams and creators who rely on Envara Ventures.</p>
+      <div class="testimonials" data-testimonials></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrapper footer-content">
+      <div>
+        <div class="logo">Envara Ventures</div>
+        <p>Minimal ecommerce built for modern products.</p>
+      </div>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms & Conditions</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/data.js"></script>
+  <script>
+    const pages = getPages();
+    document.querySelector('[data-hero-title]').textContent = pages.heroTitle;
+    document.querySelector('[data-hero-subtitle]').textContent = pages.heroSubtitle;
+    const products = getProducts();
+    const featured = pages.featured
+      .map((id) => products.find((p) => p.id === id))
+      .filter(Boolean);
+    document.querySelector('[data-featured-grid]').innerHTML = featured
+      .map(
+        (p) => `
+        <article class="product-card">
+          <a href="product.html?id=${p.id}">
+            <img loading="lazy" src="${p.images[0]}" alt="${p.name}">
+            <div class="product-meta">
+              <div>
+                <h3>${p.name}</h3>
+                <p class="badge-muted">${p.shortDescription}</p>
+              </div>
+              <span class="price">$${p.price.toFixed(2)}</span>
+            </div>
+          </a>
+        </article>
+      `
+      )
+      .join('');
+    document.querySelector('[data-testimonials]').innerHTML = (pages.testimonials || [])
+      .map(
+        (t) => `
+        <article class="testimonial">
+          <h4>${t.name}</h4>
+          <p class="badge-muted">${t.role}</p>
+          <p>${t.quote}</p>
+        </article>
+      `
+      )
+      .join('');
+  </script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

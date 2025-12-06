@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product – Envara Ventures</title>
+  <link href="https://fonts.cdnfonts.com/css/geist" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header>
+    <div class="wrapper navbar">
+      <a class="logo" href="index.html">
+        <div class="logo-mark">EV</div>
+        Envara Ventures
+      </a>
+      <nav class="nav-links">
+        <a href="shop.html">Shop</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <a href="cart.html" class="button secondary">Cart <span class="cart-count">0</span></a>
+        <a href="admin.html" class="button">Admin</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrapper">
+    <section class="layout-two" data-product-detail>
+      <div class="product-hero" data-gallery></div>
+      <div>
+        <h1 data-product-title>Product Name</h1>
+        <div class="meta-row">
+          <span class="price" data-product-price>$0.00</span>
+          <span class="badge-muted" data-product-short></span>
+        </div>
+        <p data-product-description></p>
+
+        <div class="option-group">
+          <p class="badge-muted">Select size</p>
+          <div class="option-set" data-size-options></div>
+        </div>
+        <div class="option-group">
+          <p class="badge-muted">Select color</p>
+          <div class="option-set" data-color-options></div>
+        </div>
+
+        <div class="option-group">
+          <p class="badge-muted">Quantity</p>
+          <div class="quantity">
+            <button type="button" data-qty-minus>–</button>
+            <input type="number" min="1" value="1" data-qty>
+            <button type="button" data-qty-plus>+</button>
+          </div>
+        </div>
+        <button class="button" data-add-to-cart>Add to cart</button>
+      </div>
+    </section>
+
+    <section>
+      <div class="flex-between">
+        <h2 class="section-title">Related products</h2>
+        <a href="shop.html" class="button secondary">Shop all</a>
+      </div>
+      <div class="card-grid" data-related></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrapper footer-content">
+      <div>Envara Ventures</div>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms & Conditions</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

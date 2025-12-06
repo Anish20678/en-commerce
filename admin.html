@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin – Envara Ventures</title>
+  <link href="https://fonts.cdnfonts.com/css/geist" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="logo" style="margin-bottom:16px;">
+        <div class="logo-mark">EV</div>
+        Admin</div>
+      <div class="sidebar-group">
+        <div class="sidebar-link active" data-admin-tab="products">Products</div>
+        <div class="sidebar-link" data-admin-tab="categories">Categories</div>
+        <div class="sidebar-link" data-admin-tab="orders">Orders</div>
+        <div class="sidebar-link" data-admin-tab="customers">Customers</div>
+        <div class="sidebar-link" data-admin-tab="pages">Pages</div>
+        <div class="sidebar-link" data-admin-tab="discounts">Discounts</div>
+        <div class="sidebar-link" data-admin-tab="analytics">Analytics</div>
+        <div class="sidebar-link" data-admin-tab="settings">Settings</div>
+      </div>
+    </aside>
+    <main class="admin-main">
+      <section id="products" data-admin-section style="display:grid; gap:16px;">
+        <div class="flex-between">
+          <h2>Products</h2>
+          <span class="badge-muted">Add, edit, delete products, images, and variations.</span>
+        </div>
+        <table class="table-simple" data-admin-products></table>
+        <div class="card">
+          <h3>Create or edit product</h3>
+          <form class="form-grid" data-product-form>
+            <input type="hidden" name="id">
+            <div>
+              <label>Name</label>
+              <input name="name" required>
+            </div>
+            <div>
+              <label>Price</label>
+              <input name="price" type="number" step="0.01" required>
+            </div>
+            <div>
+              <label>Category</label>
+              <input name="category" required>
+            </div>
+            <div>
+              <label>Short description</label>
+              <input name="shortDescription" required>
+            </div>
+            <div style="grid-column: 1/-1;">
+              <label>Long description</label>
+              <textarea name="description" required></textarea>
+            </div>
+            <div>
+              <label>Images (comma separated URLs)</label>
+              <input name="images">
+            </div>
+            <div>
+              <label>Sizes (comma separated)</label>
+              <input name="sizes">
+            </div>
+            <div>
+              <label>Colors (comma separated)</label>
+              <input name="colors">
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;">
+              <input type="checkbox" name="featured"> Featured
+            </label>
+            <button class="button" type="submit" style="grid-column:1/-1;">Save product</button>
+          </form>
+        </div>
+      </section>
+
+      <section id="categories" data-admin-section style="display:none; gap:16px;">
+        <div class="flex-between">
+          <h2>Categories & Collections</h2>
+          <span class="badge-muted">Organize catalog navigation.</span>
+        </div>
+        <div class="card">
+          <div data-category-list style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+          <form data-category-form style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+            <input name="category" placeholder="New category" required>
+            <button class="button" type="submit">Add</button>
+          </form>
+        </div>
+      </section>
+
+      <section id="orders" data-admin-section style="display:none; gap:16px;">
+        <div class="flex-between">
+          <h2>Orders</h2>
+          <span class="badge-muted">View and manage order status and transactions.</span>
+        </div>
+        <table class="table-simple" data-orders></table>
+        <div class="card" data-order-detail><p class="badge-muted">Select an order to view details.</p></div>
+      </section>
+
+      <section id="customers" data-admin-section style="display:none; gap:16px;">
+        <div class="flex-between">
+          <h2>Customers</h2>
+          <span class="badge-muted">Manage customers and their information.</span>
+        </div>
+        <table class="table-simple" data-customers></table>
+      </section>
+
+      <section id="pages" data-admin-section style="display:none; gap:16px;">
+        <div class="flex-between">
+          <h2>Pages</h2>
+          <span class="badge-muted">Control homepage sections and content.</span>
+        </div>
+        <form class="card" data-pages-form>
+          <div class="form-grid">
+            <div>
+              <label>Hero title</label>
+              <input name="heroTitle" required>
+            </div>
+            <div>
+              <label>Hero subtitle</label>
+              <input name="heroSubtitle" required>
+            </div>
+            <div>
+              <label>Featured product IDs (comma separated)</label>
+              <input name="featured">
+            </div>
+          </div>
+          <label>Testimonials (name|role|quote per line)</label>
+          <textarea name="testimonials"></textarea>
+          <button class="button" type="submit">Save content</button>
+        </form>
+      </section>
+
+      <section id="discounts" data-admin-section style="display:none; gap:16px;">
+        <div class="flex-between">
+          <h2>Discount codes</h2>
+          <span class="badge-muted">Coupons or special pricing.</span>
+        </div>
+        <ul data-discount-list></ul>
+        <form data-discount-form class="form-grid">
+          <div>
+            <label>Code</label>
+            <input name="code" required>
+          </div>
+          <div>
+            <label>Percent off</label>
+            <input name="amount" type="number" min="0" max="100" required>
+          </div>
+          <button class="button" type="submit" style="grid-column:1/-1;">Add discount</button>
+        </form>
+      </section>
+
+      <section id="analytics" data-admin-section style="display:none; gap:16px;">
+        <div class="flex-between">
+          <h2>Analytics</h2>
+          <span class="badge-muted">Sales, customers, product performance.</span>
+        </div>
+        <div class="analytics-grid" data-analytics></div>
+      </section>
+
+      <section id="settings" data-admin-section style="display:none; gap:16px;">
+        <div class="card">
+          <h3>General settings</h3>
+          <p class="badge-muted">Branding, typography, and simplicity are locked to Envara's identity. Adjust content through the pages panel.</p>
+          <div class="alert">All UI uses Geist font, purple primaries, and rounded buttons for consistency.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>
