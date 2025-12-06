@@ -6,15 +6,29 @@ function renderNav() {
   const cartCount = getCart().reduce((sum, item) => sum + item.quantity, 0);
   const cartBadge = document.querySelector('.cart-count');
   if (cartBadge) cartBadge.textContent = cartCount;
+  const authLink = document.querySelector('[data-auth-link]');
+  const session = getUserSession();
+  if (authLink) {
+    if (session) {
+      authLink.textContent = 'Dashboard';
+      authLink.href = 'dashboard.html';
+    } else {
+      authLink.textContent = 'Sign in';
+      authLink.href = 'account.html';
+    }
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
   renderNav();
+  enforceAdminAccess();
+  attachAccountHandlers();
   attachShopHandlers();
   attachProductPageHandlers();
   attachCartHandlers();
   attachCheckoutHandlers();
   attachContactHandlers();
+  attachDashboardHandlers();
 });
 
 function attachShopHandlers() {
@@ -202,10 +216,12 @@ function attachCheckoutHandlers() {
       return;
     }
     const orders = getOrders();
+    const session = getUserSession();
     const order = {
       id: `EV-${Date.now()}`,
       customer: formData.name,
       email: formData.email,
+      userEmail: session?.email || formData.email,
       total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
       items: cart,
       status: 'Processing',
@@ -236,4 +252,149 @@ function attachContactHandlers() {
     alert('Message received. Our team will reply shortly.');
     form.reset();
   });
+}
+
+function enforceAdminAccess(isLoginPage = false) {
+  const onAdminPage = document.body.classList.contains('admin-page') || document.body.classList.contains('admin-login');
+  const loginView = isLoginPage || document.body.classList.contains('admin-login');
+  if (!onAdminPage && !isLoginPage) return;
+  const session = getAdminSession();
+  if (!session && !loginView) {
+    window.location.href = 'admin-login.html';
+  }
+  if (session && loginView) {
+    window.location.href = 'admin.html';
+  }
+}
+
+function attachAccountHandlers() {
+  const form = document.querySelector('[data-auth-form]');
+  if (!form) return;
+  const existingSession = getUserSession();
+  if (existingSession) {
+    window.location.href = 'dashboard.html';
+    return;
+  }
+  const modeToggle = document.querySelector('[data-auth-mode]');
+  const title = document.querySelector('[data-auth-title]');
+  let mode = 'signin';
+
+  modeToggle.addEventListener('click', (e) => {
+    e.preventDefault();
+    mode = mode === 'signin' ? 'signup' : 'signin';
+    title.textContent = mode === 'signin' ? 'Sign in to continue' : 'Create your account';
+    modeToggle.textContent = mode === 'signin' ? 'Create an account' : 'Already have an account? Sign in';
+    form.querySelector('[data-name-field]').style.display = mode === 'signup' ? 'block' : 'none';
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const email = fd.get('email');
+    const password = fd.get('password');
+    const name = fd.get('name');
+    const users = getUsers();
+
+    if (mode === 'signup') {
+      if (users.some((u) => u.email === email)) {
+        alert('Account already exists. Sign in instead.');
+        return;
+      }
+      users.push({ email, password, name });
+      saveUsers(users);
+      saveUserSession({ email, name });
+      alert('Account created. Redirecting to dashboard.');
+      window.location.href = 'dashboard.html';
+      return;
+    }
+
+    const user = users.find((u) => u.email === email && u.password === password);
+    if (!user) {
+      alert('Invalid credentials.');
+      return;
+    }
+    saveUserSession({ email: user.email, name: user.name });
+    window.location.href = 'dashboard.html';
+  });
+}
+
+function attachDashboardHandlers() {
+  const dashboard = document.querySelector('[data-dashboard]');
+  if (!dashboard) return;
+  const session = getUserSession();
+  if (!session) {
+    window.location.href = 'account.html';
+    return;
+  }
+
+  dashboard.querySelector('[data-dashboard-name]').textContent = session.name || 'Customer';
+  dashboard.querySelector('[data-dashboard-email]').textContent = session.email;
+  dashboard.querySelector('[data-signout]').addEventListener('click', () => {
+    clearUserSession();
+    window.location.href = 'account.html';
+  });
+
+  const profileForm = dashboard.querySelector('[data-profile-form]');
+  if (profileForm) {
+    const users = getUsers();
+    const record = users.find((u) => u.email === session.email);
+    if (record) {
+      profileForm.name.value = record.name || '';
+      profileForm.password.value = record.password || '';
+      profileForm.phone.value = record.phone || '';
+    }
+    profileForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const fd = new FormData(profileForm);
+      const users = getUsers();
+      const existing = users.find((u) => u.email === session.email);
+      if (existing) {
+        existing.name = fd.get('name');
+        existing.password = fd.get('password');
+        existing.phone = fd.get('phone');
+        saveUsers(users);
+        saveUserSession({ email: existing.email, name: existing.name });
+        alert('Profile updated.');
+      }
+    });
+  }
+
+  renderUserOrders(session.email);
+}
+
+function renderUserOrders(email) {
+  const table = document.querySelector('[data-user-orders]');
+  if (!table) return;
+  const orders = getOrders().filter((o) => o.userEmail === email || o.email === email);
+  if (!orders.length) {
+    table.innerHTML = '<tr><td colspan="5">No orders yet.</td></tr>';
+    table.onclick = null;
+    return;
+  }
+  table.innerHTML = orders
+    .map(
+      (order, idx) => `
+      <tr data-index="${idx}">
+        <td>${order.id}</td>
+        <td>${new Date(order.created).toLocaleDateString()}</td>
+        <td>${order.status}</td>
+        <td>${formatPrice(order.total)}</td>
+        <td>
+          ${order.status === 'Processing' ? `<button class="button secondary" data-cancel="${order.id}">Cancel</button>` : ''}
+        </td>
+      </tr>
+    `
+    )
+    .join('');
+  table.onclick = (e) => {
+    const id = e.target.dataset.cancel;
+    if (!id) return;
+    const orders = getOrders();
+    const order = orders.find((o) => o.id === id);
+    if (!order) return;
+    order.status = 'Cancelled';
+    saveOrders(orders);
+    renderUserOrders(email);
+    alert('Order cancelled.');
+  };
 }
