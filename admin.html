@@ -36,6 +36,10 @@
           <h3>Create or edit product</h3>
           <form class="form-grid" data-product-form>
             <input type="hidden" name="id">
+            <input type="hidden" name="images">
+            <input type="hidden" name="gallery">
+            <input type="hidden" name="attributes">
+            <input type="hidden" name="variations">
             <div>
               <label>Name</label>
               <input name="name" required>
@@ -49,6 +53,14 @@
               <input name="category" required>
             </div>
             <div>
+              <label>SKU</label>
+              <input name="sku" placeholder="EV-001" required>
+            </div>
+            <div>
+              <label>Inventory</label>
+              <input name="inventory" type="number" min="0" value="10">
+            </div>
+            <div>
               <label>Short description</label>
               <input name="shortDescription" required>
             </div>
@@ -56,9 +68,31 @@
               <label>Long description</label>
               <textarea name="description" required></textarea>
             </div>
-            <div>
-              <label>Images (comma separated URLs)</label>
-              <input name="images">
+            <div style="grid-column: 1/-1;">
+              <label>Primary media</label>
+              <div class="dropzone" data-image-drop>
+                <strong>Drop files or tap to upload</strong>
+                <p class="subtext">Cover images define the card thumbnail. PNG and JPG supported.</p>
+                <input type="file" accept="image/*" multiple data-image-input>
+                <div class="media-previews" data-image-previews></div>
+              </div>
+              <div class="form-grid" style="margin-top:8px;">
+                <input data-image-url placeholder="Paste an image URL and click add">
+                <button class="button secondary" type="button" data-add-image-url>Add image from URL</button>
+              </div>
+            </div>
+            <div style="grid-column:1/-1;">
+              <label>Image gallery (additional angles)</label>
+              <div class="dropzone" data-gallery-drop>
+                <strong>Build a gallery</strong>
+                <p class="subtext">Drag multiple files to showcase details. First gallery item follows the primary set.</p>
+                <input type="file" accept="image/*" multiple data-gallery-input>
+                <div class="media-previews" data-gallery-previews></div>
+              </div>
+              <div class="form-grid" style="margin-top:8px;">
+                <input data-gallery-url placeholder="Paste gallery image URL">
+                <button class="button secondary" type="button" data-add-gallery-url>Add to gallery</button>
+              </div>
             </div>
             <div>
               <label>Sizes (comma separated)</label>
@@ -68,8 +102,42 @@
               <label>Colors (comma separated)</label>
               <input name="colors">
             </div>
+            <div>
+              <label>Weight (kg)</label>
+              <input name="weight" type="number" min="0" step="0.01" placeholder="1.2">
+            </div>
+            <div>
+              <label>Shipping class</label>
+              <input name="shippingClass" placeholder="Standard / Freight">
+            </div>
+            <div style="grid-column:1/-1;">
+              <label>Attributes</label>
+              <div class="form-grid">
+                <input data-attribute-name placeholder="Material" aria-label="Attribute name">
+                <input data-attribute-value placeholder="Aluminum" aria-label="Attribute value">
+                <button class="button secondary" type="button" data-add-attribute>Add attribute</button>
+              </div>
+              <div class="chip-list" data-attribute-list></div>
+            </div>
+            <div style="grid-column:1/-1;">
+              <label>Variations</label>
+              <div class="form-grid">
+                <input data-variation-title placeholder="Variation name" aria-label="Variation title">
+                <input data-variation-sku placeholder="SKU override" aria-label="Variation SKU">
+                <input data-variation-price type="number" step="0.01" placeholder="Price" aria-label="Variation price">
+                <input data-variation-stock type="number" min="0" placeholder="Inventory" aria-label="Variation stock">
+                <button class="button secondary" type="button" data-add-variation>Add variation</button>
+              </div>
+              <div class="stacked-list" data-variation-list></div>
+            </div>
             <label style="display:flex;align-items:center;gap:8px;">
               <input type="checkbox" name="featured"> Featured
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;">
+              <input type="checkbox" name="requiresShipping" checked> Requires shipping
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;">
+              <input type="checkbox" name="allowCod"> Allow COD for this product
             </label>
             <button class="button" type="submit" style="grid-column:1/-1;">Save product</button>
           </form>
@@ -165,6 +233,42 @@
           <h3>General settings</h3>
           <p class="badge-muted">Branding, typography, and simplicity are locked to Envara's identity. Adjust content through the pages panel.</p>
           <div class="alert">All UI uses Geist font, purple primaries, and rounded buttons for consistency.</div>
+        </div>
+        <div class="card" data-payment-settings>
+          <h3>Payment options</h3>
+          <p class="badge-muted">Enable cash on delivery and test Stripe integration details.</p>
+          <form class="form-grid" data-payment-form>
+            <label style="display:flex;align-items:center;gap:8px;">
+              <input type="checkbox" name="codEnabled"> Enable Cash on Delivery
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;">
+              <input type="checkbox" name="stripeEnabled"> Enable Stripe (test mode)
+            </label>
+            <div>
+              <label>Stripe publishable key</label>
+              <input name="stripeKey" placeholder="pk_test_123" autocomplete="off">
+            </div>
+            <div>
+              <label>Stripe mode</label>
+              <select name="stripeMode">
+                <option value="test">Test</option>
+                <option value="live">Live</option>
+              </select>
+            </div>
+            <button class="button" type="submit" style="grid-column:1/-1;">Save payment settings</button>
+          </form>
+        </div>
+        <div class="card" data-shipping-settings>
+          <h3>Shipping pricing rules</h3>
+          <p class="badge-muted">Create price logic by destination and thresholds.</p>
+          <div class="stacked-list" data-shipping-list></div>
+          <form class="form-grid" data-shipping-form style="margin-top:8px;">
+            <input name="region" placeholder="Region/Label" required>
+            <input name="country" placeholder="Country or *" required>
+            <input name="minTotal" type="number" step="0.01" min="0" placeholder="Minimum cart total" required>
+            <input name="cost" type="number" step="0.01" min="0" placeholder="Shipping cost" required>
+            <button class="button" type="submit" style="grid-column:1/-1;">Add rule</button>
+          </form>
         </div>
       </section>
     </main>
