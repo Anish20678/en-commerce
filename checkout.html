@@ -62,15 +62,19 @@
             <input required type="text" name="country" id="country" placeholder="Denmark">
           </div>
         </div>
+        <h3>Payment</h3>
+        <div class="payment-option" data-payment-options></div>
+        <p class="alert" data-payment-hint>Choose a payment method to complete checkout.</p>
         <label for="notes">Notes</label>
         <textarea name="notes" id="notes" placeholder="Delivery preferences or instructions"></textarea>
         <button class="button" type="submit" style="margin-top:16px;">Place order</button>
       </form>
       <div class="cart-summary">
         <h3>Order summary</h3>
-        <p class="badge-muted">Subtotal</p>
-        <h2 data-checkout-total>$0.00</h2>
-        <p class="badge-muted">Taxes and shipping calculated after confirmation.</p>
+        <div class="summary-line"><span>Subtotal</span><span data-checkout-subtotal>$0.00</span></div>
+        <div class="summary-line"><span>Shipping</span><span data-checkout-shipping>$0.00</span></div>
+        <div class="summary-line"><strong>Total</strong><strong data-checkout-total>$0.00</strong></div>
+        <p class="badge-muted">Taxes calculated at delivery. Shipping uses your admin rules.</p>
       </div>
     </section>
   </main>

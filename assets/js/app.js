@@ -2,6 +2,21 @@ function formatPrice(value) {
   return `$${value.toFixed(2)}`;
 }
 
+function calculateShipping(country, subtotal) {
+  const rules = getShippingRules();
+  const normalizedCountry = (country || '').trim().toLowerCase();
+  const validRules = rules
+    .filter((rule) => {
+      const countryMatch =
+        rule.country === '*' || (rule.country || '').trim().toLowerCase() === normalizedCountry;
+      return countryMatch && subtotal >= Number(rule.minTotal || 0);
+    })
+    .sort((a, b) => Number(a.cost) - Number(b.cost));
+  if (validRules.length) return Number(validRules[0].cost);
+  const fallback = rules.find((rule) => rule.country === '*');
+  return fallback ? Number(fallback.cost) : 0;
+}
+
 function renderNav() {
   const cartCount = getCart().reduce((sum, item) => sum + item.quantity, 0);
   const cartBadge = document.querySelector('.cart-count');
@@ -71,18 +86,64 @@ function attachProductPageHandlers() {
   document.querySelector('[data-product-short]').textContent = product.shortDescription;
   document.querySelector('[data-product-description]').textContent = product.description;
   const gallery = document.querySelector('[data-gallery]');
-  gallery.innerHTML = product.images
-    .map((src) => `<img loading="lazy" src="${src}" alt="${product.name}">`)
-    .join('');
+  const allImages = [...(product.images || []), ...(product.gallery || [])].filter(Boolean);
+  const uniqueImages = [...new Set(allImages)];
+  gallery.innerHTML = uniqueImages.length
+    ? uniqueImages.map((src) => `<img loading="lazy" src="${src}" alt="${product.name}">`).join('')
+    : '<div class="alert">No imagery available for this product.</div>';
 
+  const sizeOptions = (product.sizes && product.sizes.length
+    ? product.sizes
+    : (product.variations || []).map((v) => v.title).filter(Boolean)) || ['Standard'];
   const sizeWrap = document.querySelector('[data-size-options]');
-  sizeWrap.innerHTML = product.sizes
-    .map((s, idx) => `<div class="pill ${idx === 0 ? 'active' : ''}" data-value="${s}">${s}</div>`) 
+  sizeWrap.innerHTML = sizeOptions
+    .map((s, idx) => `<div class="pill ${idx === 0 ? 'active' : ''}" data-value="${s}">${s}</div>`)
     .join('');
   const colorWrap = document.querySelector('[data-color-options]');
-  colorWrap.innerHTML = product.colors
-    .map((c, idx) => `<div class="pill ${idx === 0 ? 'active' : ''}" data-value="${c}">${c}</div>`) 
+  const colors = product.colors && product.colors.length ? product.colors : ['Default'];
+  colorWrap.innerHTML = colors
+    .map((c, idx) => `<div class="pill ${idx === 0 ? 'active' : ''} ${product.colors?.length ? '' : 'muted'}" data-value="${c}">${c}</div>`)
     .join('');
+
+  const attributesTarget = document.querySelector('[data-product-attributes]');
+  if (attributesTarget) {
+    const attributes = product.attributes || [];
+    attributesTarget.innerHTML = attributes.length
+      ? attributes
+          .map((attr) => `<span class="chip">${attr.name}: ${attr.value}</span>`)
+          .join('')
+      : '<span class="badge-muted">No attributes added yet.</span>';
+  }
+
+  const variationTarget = document.querySelector('[data-product-variations]');
+  if (variationTarget) {
+    const variations = product.variations || [];
+    variationTarget.innerHTML = variations.length
+      ? variations
+          .map(
+            (v) => `
+          <div class="payment-card">
+            <strong>${v.title || 'Variation'}</strong>
+            <p class="badge-muted">SKU: ${v.sku || product.sku || '—'} · ${v.stock ?? 0} in stock</p>
+            <p class="badge-muted">${v.price ? formatPrice(Number(v.price)) : 'Uses base price'}</p>
+          </div>
+        `
+          )
+          .join('')
+      : '<p class="badge-muted">All purchases use the base configuration.</p>';
+  }
+
+  const shippingTarget = document.querySelector('[data-product-shipping]');
+  if (shippingTarget) {
+    if (product.requiresShipping === false) {
+      shippingTarget.textContent = 'Digital delivery — no shipping needed.';
+    } else {
+      const classLabel = product.shippingClass ? `${product.shippingClass} shipping` : 'Standard shipping';
+      const weightLabel = product.weight ? ` · approx. ${product.weight}kg` : '';
+      const codLabel = product.allowCod ? 'COD accepted' : 'COD disabled for this item';
+      shippingTarget.textContent = `${classLabel}${weightLabel}. ${codLabel}.`;
+    }
+  }
 
   function toggleActive(container, target) {
     container.querySelectorAll('.pill').forEach((pill) => pill.classList.remove('active'));
@@ -119,7 +180,16 @@ function addToCart(product, quantity = 1) {
   if (existing) {
     existing.quantity += quantity;
   } else {
-    cart.push({ id: product.id, name: product.name, price: product.price, image: product.images[0], quantity, selectedSize: product.selectedSize, selectedColor: product.selectedColor });
+    cart.push({
+      id: product.id,
+      name: product.name,
+      sku: product.sku,
+      price: product.price,
+      image: product.images[0],
+      quantity,
+      selectedSize: product.selectedSize,
+      selectedColor: product.selectedColor,
+    });
   }
   saveCart(cart);
   renderNav();
@@ -194,19 +264,65 @@ function attachCartHandlers() {
   });
 }
 
-function updateCartTotals() {
+function updateCartTotals(countryValue = '') {
   const cart = getCart();
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const summary = document.querySelector('[data-cart-summary]');
   if (summary) summary.textContent = formatPrice(subtotal);
+  const checkoutSubtotal = document.querySelector('[data-checkout-subtotal]');
+  const checkoutShipping = document.querySelector('[data-checkout-shipping]');
   const checkoutTotal = document.querySelector('[data-checkout-total]');
-  if (checkoutTotal) checkoutTotal.textContent = formatPrice(subtotal);
+  let shippingCost = 0;
+  if (checkoutSubtotal) checkoutSubtotal.textContent = formatPrice(subtotal);
+  if (checkoutShipping || checkoutSubtotal) shippingCost = calculateShipping(countryValue, subtotal);
+  if (checkoutShipping) checkoutShipping.textContent = formatPrice(shippingCost);
+  if (checkoutTotal) checkoutTotal.textContent = formatPrice(subtotal + shippingCost);
 }
 
 function attachCheckoutHandlers() {
   const form = document.querySelector('[data-checkout-form]');
   if (!form) return;
-  updateCartTotals();
+  const paymentOptions = document.querySelector('[data-payment-options]');
+  const paymentHint = document.querySelector('[data-payment-hint]');
+
+  const renderPaymentOptions = () => {
+    if (!paymentOptions) return;
+    const settings = getPaymentSettings();
+    const options = [];
+    if (settings.stripeEnabled) {
+      options.push({
+        id: 'stripe',
+        label: 'Card via Stripe',
+        description: `Collect payment with Stripe (${settings.stripeMode} mode)${settings.stripeKey ? ` · ${settings.stripeKey}` : ''}`,
+      });
+    }
+    if (settings.codEnabled) {
+      options.push({ id: 'cod', label: 'Cash on Delivery', description: 'Pay with cash when your order arrives.' });
+    }
+    if (!options.length) {
+      paymentOptions.innerHTML = '<p class="badge-muted">No payment methods are enabled. Configure them in admin.</p>';
+      if (paymentHint) paymentHint.textContent = 'Enable Stripe or COD in admin settings to accept orders.';
+      return;
+    }
+    paymentOptions.innerHTML = options
+      .map(
+        (opt, idx) => `
+        <label class="payment-card">
+          <input type="radio" name="paymentMethod" value="${opt.id}" ${idx === 0 ? 'checked' : ''}>
+          <strong>${opt.label}</strong>
+          <span class="badge-muted">${opt.description}</span>
+        </label>
+      `
+      )
+      .join('');
+    if (paymentHint) paymentHint.textContent = 'Payments are simulated for this demo store.';
+  };
+
+  renderPaymentOptions();
+
+  const countryInput = form.country;
+  updateCartTotals(countryInput.value);
+  countryInput.addEventListener('input', () => updateCartTotals(countryInput.value));
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const formData = Object.fromEntries(new FormData(form).entries());
@@ -215,20 +331,31 @@ function attachCheckoutHandlers() {
       alert('Cart is empty');
       return;
     }
+    if (!formData.paymentMethod) {
+      alert('Select a payment method');
+      return;
+    }
     const orders = getOrders();
     const session = getUserSession();
+    const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const shippingCost = calculateShipping(formData.country, subtotal);
+    const total = subtotal + shippingCost;
+    const transactionLabel =
+      formData.paymentMethod === 'stripe' ? 'Stripe (pending capture)' : 'Awaiting COD settlement';
     const order = {
       id: `EV-${Date.now()}`,
       customer: formData.name,
       email: formData.email,
       userEmail: session?.email || formData.email,
-      total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
+      total,
       items: cart,
-      status: 'Processing',
+      status: formData.paymentMethod === 'stripe' ? 'Awaiting Payment' : 'Processing',
       address: `${formData.address}, ${formData.city}, ${formData.country}`,
       notes: formData.notes || '',
       created: new Date().toISOString(),
-      transaction: 'Captured',
+      transaction: transactionLabel,
+      shippingCost,
+      paymentMethod: formData.paymentMethod,
     };
     orders.unshift(order);
     saveOrders(orders);
