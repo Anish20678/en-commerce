@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard – Envara Ventures</title>
+  <link href="https://fonts.cdnfonts.com/css/geist" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header>
+    <div class="wrapper navbar">
+      <a class="logo" href="index.html">
+        <div class="logo-mark">EV</div>
+        Envara Ventures
+      </a>
+      <nav class="nav-links">
+        <a href="shop.html">Shop</a>
+        <a href="about.html">About</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <a href="cart.html" class="button secondary">Cart <span class="cart-count">0</span></a>
+        <a href="account.html" class="button" data-auth-link>Account</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrapper" data-dashboard>
+    <section class="hero">
+      <div>
+        <p class="badge">Welcome back</p>
+        <h1>Hi, <span data-dashboard-name></span></h1>
+        <p class="section-subtitle">Manage your orders, preferences, and account settings.</p>
+        <div class="nav-actions">
+          <button class="button secondary" data-signout>Sign out</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Account email</h3>
+        <p class="badge-muted" data-dashboard-email></p>
+        <p class="badge-muted">Orders placed with this email automatically sync here.</p>
+      </div>
+    </section>
+
+    <section class="layout-two" style="gap:16px;">
+      <div class="card">
+        <h3>Orders</h3>
+        <p class="badge-muted">Track status, totals, and make changes.</p>
+        <table class="table-simple" data-user-orders></table>
+      </div>
+      <div class="card">
+        <h3>Profile</h3>
+        <p class="badge-muted">Update your details for faster checkout.</p>
+        <form class="form-grid" data-profile-form>
+          <div>
+            <label>Name</label>
+            <input name="name" required>
+          </div>
+          <div>
+            <label>Password</label>
+            <input name="password" required>
+          </div>
+          <div>
+            <label>Phone</label>
+            <input name="phone" placeholder="Optional">
+          </div>
+          <button class="button" type="submit" style="grid-column:1/-1;">Save profile</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrapper footer-content">
+      <div>
+        <div class="logo">Envara Ventures</div>
+        <p>Minimal ecommerce built for modern products.</p>
+      </div>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms & Conditions</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

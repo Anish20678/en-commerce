@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login – Envara Ventures</title>
+  <link href="https://fonts.cdnfonts.com/css/geist" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="auth-page admin-login">
+  <main class="auth-card">
+    <div>
+      <a class="logo" href="index.html">
+        <div class="logo-mark">EV</div>
+        Envara Ventures
+      </a>
+      <p class="badge-muted">Restricted admin access. Use dedicated credentials.</p>
+    </div>
+    <form class="form-grid" data-admin-login>
+      <div>
+        <label>Email</label>
+        <input type="email" name="email" required placeholder="admin@envara.com">
+      </div>
+      <div>
+        <label>Password</label>
+        <input type="password" name="password" required placeholder="admin123">
+      </div>
+      <button class="button" type="submit" style="grid-column:1/-1;">Sign in to admin</button>
+      <p class="badge-muted">Need a customer account? <a href="account.html">Go to customer sign in</a>.</p>
+    </form>
+  </main>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      enforceAdminAccess(true);
+      const form = document.querySelector('[data-admin-login]');
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const fd = new FormData(form);
+        const email = fd.get('email');
+        const password = fd.get('password');
+        const admin = getAdminUser();
+        if (admin.email === email && admin.password === password) {
+          saveAdminSession({ email, signedInAt: new Date().toISOString() });
+          window.location.href = 'admin.html';
+        } else {
+          alert('Invalid admin credentials.');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

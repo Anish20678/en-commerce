@@ -22,6 +22,16 @@ function renderAdmin() {
 
 document.addEventListener('DOMContentLoaded', renderAdmin);
 
+document.addEventListener('DOMContentLoaded', () => {
+  const signout = document.querySelector('[data-admin-signout]');
+  if (signout) {
+    signout.addEventListener('click', () => {
+      clearAdminSession();
+      window.location.href = 'admin-login.html';
+    });
+  }
+});
+
 function renderProductManager() {
   const table = document.querySelector('[data-admin-products]');
   const form = document.querySelector('[data-product-form]');

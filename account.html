@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account – Envara Ventures</title>
+  <link href="https://fonts.cdnfonts.com/css/geist" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="auth-page">
+  <main class="auth-card">
+    <div>
+      <a class="logo" href="index.html">
+        <div class="logo-mark">EV</div>
+        Envara Ventures
+      </a>
+      <p class="badge-muted" data-auth-title>Sign in to continue</p>
+    </div>
+    <form class="form-grid" data-auth-form>
+      <div data-name-field style="display:none;">
+        <label>Full name</label>
+        <input name="name" placeholder="Alex Doe">
+      </div>
+      <div>
+        <label>Email</label>
+        <input type="email" name="email" required placeholder="you@example.com">
+      </div>
+      <div>
+        <label>Password</label>
+        <input type="password" name="password" required placeholder="••••••••">
+      </div>
+      <button class="button" type="submit" style="grid-column:1/-1;">Continue</button>
+      <p class="badge-muted"><a href="#" data-auth-mode>Create an account</a></p>
+    </form>
+  </main>
+
+  <script src="assets/js/data.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>

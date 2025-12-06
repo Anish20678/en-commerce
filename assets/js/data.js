@@ -81,6 +81,12 @@ const defaultProducts = [
 
 const defaultCategories = ['Lighting', 'Furniture', 'Seating', 'Accessories', 'Objects', 'Carry'];
 
+const defaultAdmin = {
+  email: 'admin@envara.com',
+  password: 'admin123',
+  name: 'Store Admin',
+};
+
 const storage = {
   fetch(key, fallback) {
     const raw = localStorage.getItem(key);
@@ -97,6 +103,8 @@ function initStore() {
   if (!localStorage.getItem('ev_orders')) storage.save('ev_orders', []);
   if (!localStorage.getItem('ev_customers')) storage.save('ev_customers', []);
   if (!localStorage.getItem('ev_discounts')) storage.save('ev_discounts', []);
+  if (!localStorage.getItem('ev_users')) storage.save('ev_users', []);
+  if (!localStorage.getItem('ev_admin_user')) storage.save('ev_admin_user', defaultAdmin);
   if (!localStorage.getItem('ev_pages')) storage.save('ev_pages', {
     heroTitle: 'Design-forward essentials for thoughtful workspaces.',
     heroSubtitle: 'Envara Ventures curates precision-built products with minimal aesthetics, adaptive functionality, and sustainable materials.',
@@ -165,4 +173,44 @@ function getCart() {
 
 function saveCart(cart) {
   storage.save('ev_cart', cart);
+}
+
+function getUsers() {
+  return storage.fetch('ev_users', []);
+}
+
+function saveUsers(users) {
+  storage.save('ev_users', users);
+}
+
+function getUserSession() {
+  return storage.fetch('ev_user_session', null);
+}
+
+function saveUserSession(session) {
+  storage.save('ev_user_session', session);
+}
+
+function clearUserSession() {
+  localStorage.removeItem('ev_user_session');
+}
+
+function getAdminUser() {
+  return storage.fetch('ev_admin_user', defaultAdmin);
+}
+
+function saveAdminUser(user) {
+  storage.save('ev_admin_user', user);
+}
+
+function getAdminSession() {
+  return storage.fetch('ev_admin_session', null);
+}
+
+function saveAdminSession(session) {
+  storage.save('ev_admin_session', session);
+}
+
+function clearAdminSession() {
+  localStorage.removeItem('ev_admin_session');
 }
